@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">🛡️ AI Cloud Security</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link active" href="/results">Results</a>
+                <a class="nav-link" href="/remediation">Remediation</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Scan Results</h2>
+        
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Resource ID</th>
+                            <th>Type</th>
+                            <th>Public Access</th>
+                            <th>Open Ports</th>
+                            <th>Privilege Level</th>
+                            <th>Anomaly Score</th>
+                            <th>Risk Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                        <tr>
+                            <td>{{ row.Resource_ID }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ row.Resource_Type }}</span>
+                            </td>
+                            <td>
+                                {% if row.Public_Access == 1 %}
+                                    <span class="badge bg-warning">Yes</span>
+                                {% else %}
+                                    <span class="badge bg-success">No</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ row.Open_Ports }}</td>
+                            <td>
+                                {% if row.Privilege_Level == 'High' %}
+                                    <span class="badge bg-danger">{{ row.Privilege_Level }}</span>
+                                {% elif row.Privilege_Level == 'Medium' %}
+                                    <span class="badge bg-warning">{{ row.Privilege_Level }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ row.Privilege_Level }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ row.Anomaly_Score }}</td>
+                            <td>
+                                {% if row.Breach_Risk == 1 %}
+                                    <span class="badge bg-danger">Risky</span>
+                                {% else %}
+                                    <span class="badge bg-success">Secure</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="alert alert-info mt-4">
+                <strong>Note:</strong> Showing first 20 resources. Total dataset contains 1000 resources.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
